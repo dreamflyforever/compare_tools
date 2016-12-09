@@ -3,8 +3,52 @@
 #include <sys/stat.h>
 #include <sys/mman.h>
 #include <string.h>
+#include <stdlib.h>
+
+#if 1
+#define pf(format, ...) \
+	{printf("[%s : %s : %d] ", \
+	__FILE__, __func__, __LINE__); \
+	printf(format, ##__VA_ARGS__);}
+#else
+#define pf(format, ...) 
+#endif
+
+int fetch(unsigned char const *start, unsigned long length)
+{
+	static int z;
+	char *c = malloc(100);
+	memset(c, 0, 100);
+	int i;
+	for (i = 0; i < (length -7); i++) {
+		if ((start[i] == 'i')
+			&& start[i+1] == 'n'
+			&& start[i+2] == 'p'
+			&& start[i+3] == 'u'
+			&& start[i+4] == 't'
+			&& start[i+5] == '"'
+			&& start[i+6] == ':'
+			&& start[i+7] == '"') {
+			memset(c, 0, 100);
+			int j;
+			for (j = 0; j < length; j++) {
+				if (start[i+8+j] == '"')
+					break;
+				c[j] = start[i+8+j];
+			}
+			printf("%s  ", c);
+			memset(c, 0, 100);
+			z++;
+			if ((z%8) == 0)
+				printf("\n--------------------------------------------------------\n");
+		}
+	}
+	return 0;
+}
+
+static int all;
+static int pass;
 char *ss = "{\"input\":\"下一首\",\"semantics\":{\"request\":{\"domain\":\"中控\"\"";
-char *fetch(unsigned char const *start, unsigned long length);
 char *old;
 char *new;
 int main(int argc, char *argv[])
@@ -16,33 +60,38 @@ int main(int argc, char *argv[])
 	struct stat stat;
 	void *fdm;
 
-	if (argc != 1)
+	if (argc != 1) {
+		printf("%s %d\n", __func__, __LINE__);
 		return 1;
-
+	}
 	if (fstat(STDIN_FILENO, &stat) == -1 ||
-			stat.st_size == 0)
+			stat.st_size == 0) {
+		printf("%s %d: %d\n", __func__, __LINE__, stat.st_size);
 		return 2;
+	}
 
 	fdm = mmap(0, stat.st_size, PROT_READ, MAP_SHARED, STDIN_FILENO, 0);
-	if (fdm == MAP_FAILED)
+	if (fdm == MAP_FAILED) {
+		printf("%s %d\n", __func__, __LINE__);
 		return 3;
-
-	check(fdm, stat.st_size);
-
-	if (munmap(fdm, stat.st_size) == -1)
+	}
+	printf("stat.st_size : %d\n", stat.st_size);
+	//check(fdm, stat.st_size);
+	fetch(fdm, stat.st_size);
+	if (munmap(fdm, stat.st_size) == -1) {
+		printf("%s %d\n", __func__, __LINE__);
 		return 4;
-	
+	}
 	free(old);
+	printf("all/pass %d/%d\n", all, pass);
 	return 0;
 }
 
+#if 0
 int check(unsigned char const *start, unsigned long length)
 {
-	static int all;
-	static int pass;
 	all++;
-	memset(new, 0, 100);
-	new = fetch(ss, strlen(ss));
+	new = fetch(start, length);
 	printf("old: %s\t new: %s\n", old, new);
 	int r = strncmp(new, old, strlen(ss));
 	if (r == 0) {
@@ -56,7 +105,6 @@ int check(unsigned char const *start, unsigned long length)
 char *fetch(unsigned char const *start, unsigned long length)
 {
 	char *s = strstr(start, "\"input\":\"");
-	printf("%d\n", strlen(s));
 	char *c = malloc(100);
 	memset(c, 0, 100);
 	int i;
@@ -65,7 +113,7 @@ char *fetch(unsigned char const *start, unsigned long length)
 			break;
 		c[i] = s[9+i];
 	}
-	printf("%s\n", c);
-	free(s);
 	return c;
 }
+#endif
+
