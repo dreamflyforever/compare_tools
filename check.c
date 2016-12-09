@@ -75,7 +75,6 @@ int main(int argc, char *argv[])
 		printf("%s %d\n", __func__, __LINE__);
 		return 3;
 	}
-	printf("stat.st_size : %d\n", stat.st_size);
 	//check(fdm, stat.st_size);
 	fetch(fdm, stat.st_size);
 	if (munmap(fdm, stat.st_size) == -1) {
