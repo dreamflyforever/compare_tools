@@ -43,10 +43,11 @@ int fetch(unsigned char const *start, unsigned long length)
 				printf("\n--------------------------------------------------------\n");
 		}
 	}
+	printf("\ntest case number : %d\n", z);
 	return 0;
 }
 
-nt main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
 	struct stat stat;
 	void *fdm;
@@ -71,6 +72,5 @@ nt main(int argc, char *argv[])
 		printf("%s %d\n", __func__, __LINE__);
 		return 4;
 	}
-	free(old);
 	return 0;
 }
