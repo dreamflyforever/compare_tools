@@ -46,17 +46,8 @@ int fetch(unsigned char const *start, unsigned long length)
 	return 0;
 }
 
-static int all;
-static int pass;
-char *ss = "{\"input\":\"下一首\",\"semantics\":{\"request\":{\"domain\":\"中控\"\"";
-char *old;
-char *new;
-int main(int argc, char *argv[])
+nt main(int argc, char *argv[])
 {
-	old = malloc(100);
-	memset(old, 0, 100);
-	strcpy(old, "导航");
-
 	struct stat stat;
 	void *fdm;
 
@@ -75,44 +66,11 @@ int main(int argc, char *argv[])
 		printf("%s %d\n", __func__, __LINE__);
 		return 3;
 	}
-	//check(fdm, stat.st_size);
 	fetch(fdm, stat.st_size);
 	if (munmap(fdm, stat.st_size) == -1) {
 		printf("%s %d\n", __func__, __LINE__);
 		return 4;
 	}
 	free(old);
-	printf("all/pass %d/%d\n", all, pass);
 	return 0;
 }
-
-#if 0
-int check(unsigned char const *start, unsigned long length)
-{
-	all++;
-	new = fetch(start, length);
-	printf("old: %s\t new: %s\n", old, new);
-	int r = strncmp(new, old, strlen(ss));
-	if (r == 0) {
-		pass++;
-	}
-	memset(old, 0, 100);
-	memcpy(old, new, strlen(new));
-	free(new);
-}
-
-char *fetch(unsigned char const *start, unsigned long length)
-{
-	char *s = strstr(start, "\"input\":\"");
-	char *c = malloc(100);
-	memset(c, 0, 100);
-	int i;
-	for (i = 0; i < length; i++) {
-		if (s[9+i] == '"')
-			break;
-		c[i] = s[9+i];
-	}
-	return c;
-}
-#endif
-
