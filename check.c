@@ -38,9 +38,10 @@ int fetch(unsigned char const *start, unsigned long length)
 			}
 			printf("%s  ", c);
 			memset(c, 0, 100);
-			z++;
-			if ((z%8) == 0)
-				printf("\n--------------------------------------------------------\n");
+			printf("\n");
+			//z++;
+			//if ((z%8) == 0)
+			//	printf("\n--------------------------------------------------------\n");
 		}
 	}
 	printf("\ntest case number : %d\n", z);

@@ -1,8 +1,8 @@
 #!/bin/sh
-rm OGG
-rm WAV
+rm OGG -rf
+rm WAV -rf
 
-Folder_TEST="/home/jim/Downloads/out"
+Folder_TEST="/home/jim/Downloads/ai_mcsnor_evl13dec_fast_v1/wav"
 EWAV="_8k.wav"
 EOGG="_8k.ogg"
 SEWAV="__8k.wav"
@@ -25,10 +25,11 @@ mkdir WAV
 mv *.ogg OGG
 mv *.wav WAV
 
-echo "--------------------------------------------------------"
+echo "\n--------------------------------------------------------\n"
 
 
+Folder_TEST="/home/jim/Downloads/ai_mcsnor_evl13dec_fast_v1/wav"
 for file_test in ${Folder_TEST}/*; do
-	mv $file_test song.ogg
+	/home/jim/test/compare_tools/program/speexenc $file_test song.ogg
 	/home/jim/test/compare_tools/program/check_aihome.py
 done
